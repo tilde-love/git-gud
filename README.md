@@ -1,2 +1,2 @@
-# git-gud
-Better github through automation
+# Git gud or die crying
+> Better github through automation
