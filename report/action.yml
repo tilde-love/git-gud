@@ -1,0 +1,38 @@
+name: 💬 Report
+description: 'Report back as a comment'
+inputs:
+  id:
+    description: |
+      The id of the issue or pull request to reply to.
+      If not supplied then an attempt to automatically resolve it will be made.
+
+    required: false
+    default: ''
+
+  body:
+    description: 'The body of the comment'
+    required: true
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: 💬 Make Report
+    uses: actions/github-script@v5
+    env:
+      IN_ID: ${{ inputs.id }}
+      IN_BODY: ${{ inputs.body }}
+    with:
+      script: |
+        const inId = process.env.IN_ID;
+        const inBody = process.env.IN_BODY;
+
+        let issueId = inId.length == 0 ? context.issue.number : inId;
+
+        github.rest.issues.createComment({
+          issue_number: issueId,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: inBody
+        });

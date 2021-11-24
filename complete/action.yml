@@ -1,0 +1,58 @@
+name: 💎 Create pull request
+description: 'Setup next release branch'
+inputs:
+  id:
+    description: 'The id of the issue or pull request to reply to. If not supplied then an attempt to automatically resolve it will be made.'
+    required: false
+    default: ''
+
+  branch:
+    description: 'Name of the branch'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+  - id: create
+    uses: actions/github-script@v5
+    env:
+      IN_ID: ${{ inputs.id }}
+      IN_BRANCH: ${{ inputs.branch }}
+    with:
+      script: |
+        const head = process.env.IN_BRANCH;
+
+        const inId = process.env.IN_ID;
+
+        let issueId = inId.length == 0 ? context.issue.number : inId;
+
+        const result = await github.rest.pulls.create({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          head: head,
+          base: "main",
+          title: `🥳 Complete ${head}`,
+          body: `
+          # pull request from ${head} to main
+          closes: #${issueId}
+
+          \`/publish\` : to create a release
+          `
+        });
+
+        core.notice(JSON.stringify(result));
+
+  - name: 💬 Report success
+    if: ${{ success() }}
+    uses: tilde-love/love-actions/report@main
+    with:
+      body: |
+        ✅ Pull request created for branch ${{ inputs.branch }}
+
+  - name: 💬 Report failure
+    if: ${{ failure() }}
+    uses: tilde-love/love-actions/report@main
+    with:
+      body: |
+        ⚠ Could not create a pull request for branch ${{ inputs.branch }}

@@ -1,0 +1,79 @@
+name: 💖 Next Release Branch
+description: 'Setup next release branch'
+inputs:
+  package-path:
+    description: 'Path to the folder that contains package json file'
+    required: true
+    default: './'
+
+runs:
+  using: "composite"
+  steps:
+
+  - uses: actions/checkout@v2
+
+  - id: version
+    name: 👆 Increment package version
+    shell: bash
+    working-directory: ${{ inputs.package-path }}
+    run: |
+      git config user.name github-actions
+      git config user.email github-actions@github.com
+
+      version=$(npm version patch --no-git-tag-version)
+      branch=$version
+
+      echo "::set-output name=version::$version"
+      echo "::set-output name=branch::$branch"
+      echo "::set-output name=branch-path::/${{ github.repository }}/tree/$branch"
+
+      git branch $branch
+      git checkout $branch
+
+      git add .
+      git commit -m "😚 Increment package version to $version"
+      git push --set-upstream origin $branch
+
+  - id: create-issue
+    name: 💬 Create issue
+    uses: actions/github-script@v5
+    env:
+      VERSION: ${{ steps.version.outputs.version }}
+      BRANCH: ${{ steps.version.outputs.branch }}
+      BRANCH_PATH: ${{ steps.version.outputs.branch-path }}
+    with:
+      script: |
+        const version = process.env.VERSION;
+        const branch = process.env.BRANCH;
+        const branchPath = process.env.BRANCH_PATH;
+
+        const result = await github.rest.issues.create({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          title: `🚀 ${version}`,
+          body: `
+          ## Branch created: [${branch}](${branchPath})
+
+          #### Reply with the following when you are ready to merge back into main:
+          \`/complete ${branch}\`
+          `
+        });
+
+        core.setOutput("new_issue", `${result.data.number}`);
+
+
+  - name: 💬 Report success
+    if: ${{ success() }}
+    uses: tilde-love/love-actions/report@main
+    with:
+      body: |
+        ✅ Branch created: [${{ steps.version.outputs.branch }}](${{ steps.version.outputs.branch-path }})
+
+        Issue #${{ steps.create-issue.outputs.new_issue }} has been created for this branch
+
+  - name: 💬 Report failure
+    if: ${{ failure() }}
+    uses: tilde-love/love-actions/report@main
+    with:
+      body: |
+        ⚠ Could not setup next release branch for ${{ steps.version.outputs.version }}

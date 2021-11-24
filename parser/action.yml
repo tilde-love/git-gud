@@ -1,0 +1,78 @@
+name: 👁️‍🗨️ Parse commands
+description: 'Parse commands from github issues and pull requests'
+inputs:
+  commands:
+    description: 'List of allowed commands'
+    required: true
+    default: '[ ]'
+
+  allowed-associations:
+    description: 'List of allowed associations'
+    required: false
+
+outputs:
+  parsed:
+    description: 'A stringified JSON array of parsed commands for use in a workflow matrix'
+    value: ${{ steps.parse.outputs.parsed }}
+
+runs:
+  using: "composite"
+  steps:
+
+  - id: parse
+    uses: actions/github-script@v5
+    env:
+      IN_COMMANDS: ${{ inputs.commands }}
+      IN_ALLOWED: ${{ inputs.allowed-associations }}
+    with:
+      script: |
+        const commands = [];
+
+        try {
+            const commandsConfig = JSON.parse(process.env.IN_COMMANDS);
+            const allowedAssociations = JSON.parse(process.env.IN_ALLOWED);
+
+            const isComment =
+                context.eventName === "issue_comment"
+                || context.eventName === "pull_request_review_comment";
+
+            if (isComment === false) {
+                core.notice(`Event is not a comment (${context.eventName})`);
+                return;
+            }
+
+            const author_association = context.payload.comment.author_association;
+            const issue = context.payload.comment.issue;
+            const pullRequest = context.payload.comment.pull_request;
+            const body = context.payload.comment.body;
+            const lines = body.split("\r\n");
+
+            if (allowedAssociations.indexOf(author_association) <= -1) {
+                core.notice(`User does not have suitable permission to run commands (${author_association})`);
+                return;
+            }
+
+            for(const line of lines) {
+                if (line.startsWith('/') === false) {
+                    continue;
+                }
+
+                const tokens = line.split(' ');
+
+                for(const match of commandsConfig) {
+                    if (tokens[0] !== match) {
+                        // core.notice(`'${tokens[0]}' != '${match}'`);
+                        continue;
+                    }
+
+                    core.notice(`parsed command: ${JSON.stringify(tokens)}`);
+
+                    commands.push(tokens);
+                    break;
+                }
+            }
+        } catch (error) {
+            core.setFailed(error.message);
+        } finally {
+            core.setOutput('parsed', JSON.stringify(commands));
+        }

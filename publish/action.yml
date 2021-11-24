@@ -1,0 +1,55 @@
+name: 🚀 Create Release
+description: 'Create a release for review'
+inputs:
+  package-path:
+    description: 'Path to the folder that contains package json file'
+    required: true
+    default: './'
+
+runs:
+  using: "composite"
+  steps:
+
+  - uses: actions/checkout@v2
+
+  - id: version
+    name: 👆 Extract package version
+    shell: bash
+    working-directory: ${{ inputs.package-path }}
+    run: |
+      version=$(node -pe "require('./package.json').version")
+      echo "::set-output name=version::$version"
+
+  - id: create-release
+    name: 🚀 Create release
+    uses: actions/github-script@v5
+    env:
+      IN_VERSION: ${{ steps.version.outputs.version }}
+    with:
+      script: |
+        const version = process.env.IN_VERSION;
+
+        const result = await github.rest.repos.createRelease({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          tag_name: `${version}`,
+          name: `🚀 ${version}`,
+          draft: false,
+          generate_release_notes: true
+        });
+
+        core.notice(JSON.stringify(result));
+
+  - name: 💬 Report success
+    if: ${{ success() }}
+    uses: tilde-love/love-actions/report@main
+    with:
+      body: |
+        ✅ Release Created: 🚀 ${{ steps.version.outputs.version }}
+
+  - name: 💬 Report failure
+    if: ${{ failure() }}
+    uses: tilde-love/love-actions/report@main
+    with:
+      body: |
+        ⚠ Could not create a release for ${{ steps.version.outputs.version }}
