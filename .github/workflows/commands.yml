@@ -13,7 +13,7 @@ jobs:
     - id: parser
       uses: tilde-love/git-gud/parser@main
       with:
-        commands: '[ "/help", "/complete", "/publish", "/next", "/approve" ]'
+        commands: '[ "/complete", "/publish", "/next", "/approve" ]'
         allowed-associations: '[ "OWNER", "MEMBER" ]'
     outputs:
       has_commands: steps.parser.outputs.parsed !== "[]"
