@@ -25,7 +25,7 @@ runs:
         const yaml = require('js-yaml');
 
         try {
-            const configurationPath = JSON.parse(process.env.IN_CONFIG_PATH);
+            const configurationPath = process.env.IN_CONFIG_PATH;
 
             const fileContents = fs.readFileSync(configurationPath, 'utf8');
             const configuration = yaml.loadAll(fileContents);
