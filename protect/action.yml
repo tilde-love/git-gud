@@ -43,7 +43,7 @@ runs:
                 branchConfig.repo = context.repo.repo;
                 branchConfig.branch = branch;
 
-                rest.repos.updateBranchProtection(branchConfig);
+                const result = await github.rest.repos.updateBranchProtection(branchConfig);
 
                 core.notice("🔒 Apply protection to branch " + branch);
             }
