@@ -13,6 +13,7 @@ runs:
   using: "composite"
   steps:
   - run: npm install js-yaml
+    shell: bash
   - id: parse
     uses: actions/github-script@v5
     env:
@@ -25,7 +26,6 @@ runs:
 
         try {
             const configurationPath = JSON.parse(process.env.IN_CONFIG_PATH);
-            const token = JSON.parse(process.env.IN_REPO_TOKEN);
 
             const fileContents = fs.readFileSync(configurationPath, 'utf8');
             const configuration = yaml.loadAll(fileContents);
