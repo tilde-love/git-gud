@@ -1,9 +1,7 @@
 source:
-  - **/lib/**/*
+  - '*.js'
 action:
-  - **/action.yml
-tests:
-  - **/tests/**/*
+  - '**/action.yml'
 automation:
   - .github/**/*
 docs:
