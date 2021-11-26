@@ -1,0 +1,17 @@
+name: 🔒 Protect Branches
+on:
+  workflow_dispatch:
+  push:
+    branches: [ 'main' ]
+    paths: [ '.github/workflows/protect.yml', '.github/branch-protection.yml' ]
+
+jobs:
+  protect:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: tilde-love/git-gud/protect@main
+        with:
+          configuration-path: .github/branch-protection.yml
+          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

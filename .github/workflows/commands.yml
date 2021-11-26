@@ -11,7 +11,7 @@ jobs:
     name: 👁️‍🗨️ Parse Commands
     steps:
     - id: parser
-      uses: tilde-love/love-actions/parser@main
+      uses: tilde-love/git-gud/parser@main
       with:
         commands: '[ "/help", "/complete", "/publish", "/next", "/approve" ]'
         allowed-associations: '[ "OWNER", "MEMBER" ]'
@@ -40,14 +40,14 @@ jobs:
 
     - name: 💖 Setup next release branch
       if: ${{ '/next' == matrix.commands[0] }}
-      uses: tilde-love/love-actions/next@main
+      uses: tilde-love/git-gud/next@main
 
     - name: 💎 Create pull request
       if: ${{ '/complete' == matrix.commands[0] }}
-      uses: tilde-love/love-actions/complete@main
+      uses: tilde-love/git-gud/complete@main
       with:
         branch: ${{ matrix.commands[1] }}
 
     - name: 🚀 Create release
       if: ${{ '/publish' == matrix.commands[0] }}
-      uses: tilde-love/love-actions/publish@main
+      uses: tilde-love/git-gud/publish@main

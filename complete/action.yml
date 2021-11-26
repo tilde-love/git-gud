@@ -45,14 +45,14 @@ runs:
 
   - name: 💬 Report success
     if: ${{ success() }}
-    uses: tilde-love/love-actions/report@main
+    uses: tilde-love/git-gud/report@main
     with:
       body: |
         ✅ Pull request created for branch ${{ inputs.branch }}
 
   - name: 💬 Report failure
     if: ${{ failure() }}
-    uses: tilde-love/love-actions/report@main
+    uses: tilde-love/git-gud/report@main
     with:
       body: |
         ⚠ Could not create a pull request for branch ${{ inputs.branch }}

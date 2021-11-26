@@ -1,0 +1,54 @@
+name: 🛡️ Protect
+description: 'A lightweight workflow action to set the branch protection on a github repository'
+inputs:
+  repo-token:
+    description: 'Token to use to authorize branch protection changes. Typically the GITHUB_TOKEN secret'
+    required: true
+  configuration-path:
+    description: 'The path for the branch protection configurations'
+    default: '.github/branch-protection.yml'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+  - run: npm install js-yaml
+  - id: parse
+    uses: actions/github-script@v5
+    env:
+      IN_CONFIG_PATH: ${{ inputs.configuration-path }}
+    with:
+      github-token: ${{ inputs.repo-token }}
+      script: |
+        const fs = require('fs');
+        const yaml = require('js-yaml');
+
+        try {
+            const configurationPath = JSON.parse(process.env.IN_CONFIG_PATH);
+            const token = JSON.parse(process.env.IN_REPO_TOKEN);
+
+            const fileContents = fs.readFileSync(configurationPath, 'utf8');
+            const configuration = yaml.loadAll(fileContents);
+
+            const branches = configuration[0];
+
+            for(const branch in branches) {
+                if (branches.hasOwnProperty(branch) === false) {
+                    continue;
+                }
+
+                const branchConfig = branches[branch];
+
+                branchConfig.owner = context.repo.owner;
+                branchConfig.repo = context.repo.repo;
+                branchConfig.branch = branch;
+
+                rest.repos.updateBranchProtection(branchConfig);
+
+                core.notice("🔒 Apply protection to branch " + branch);
+            }
+
+        } catch (error) {
+            core.setFailed(error.message);
+        }
+
