@@ -1,4 +1,4 @@
-name-template: 'v$RESOLVED_VERSION'
+name-template: '🚀 v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 template: |
   # Changes
@@ -8,10 +8,10 @@ change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&'
 
 categories:
-  - title: '😚 Breaking Changes'
+  - title: '💣 Breaking Changes'
     labels:
       - 'breaking'
-  - title: '🚀 Features'
+  - title: '😚 Features'
     labels:
       - 'feature'
       - 'enhancement'
@@ -40,6 +40,8 @@ autolabeler:
       - '.github/**/*'
     title:
       - '/^🔧/i'
+      - '/^🛠️/i'
+      - '/^⛏️/i'
       
   - label: 'bug'
     branch:
@@ -59,10 +61,21 @@ autolabeler:
       - '/feature\/.+/'
     title:
       - '/^✨/i'
+      - '/^😗/i'
+      - '/^😚/i'
+      - '/^😘/i'
+      - '/^😙/i'
+      - '/^💎/i'
   
   - label: 'breaking'
     title:
       - '/^💣/i'      
+      
+  - label: 'security'
+    title:
+      - '/^🛡️/i'    
+      - '/^🔒/i'   
+      - '/^🔐/i'   
       
 version-resolver:
   major:
@@ -74,8 +87,7 @@ version-resolver:
   patch:
     labels:
       - 'bug'
-      - 'maintenance'
-      - 'workflow'
+      - 'automation'
       - 'docs'
       - 'security'
 
