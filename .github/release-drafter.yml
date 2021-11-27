@@ -26,7 +26,44 @@ categories:
   - title: '📝 Documentaion'
     label: 
       - 'docs'
+      
+autolabeler:
 
+  - label: 'docs'
+    files:
+      - '*.md'      
+    title:
+      - '/^📝/i'      
+      
+  - label: 'automation'
+    files:
+      - '.github/**/*'
+    title:
+      - '/^🔧/i'
+      
+  - label: 'bug'
+    branch:
+      - '/fix\/.+/'
+    title:
+      - '/^🐛/i'
+      - '/^🐌/i'
+      - '/^🐝/i'
+      - '/^🐜/i'
+      - '/^🐞/i'
+      - '/^🦗/i'
+      - '/^🦋/i'
+      - '/^🕷️/i'
+      
+  - label: 'feature'
+    branch:
+      - '/feature\/.+/'
+    title:
+      - '/^✨/i'
+  
+  - label: 'breaking'
+    title:
+      - '/^💣/i'      
+      
 version-resolver:
   major:
     labels:
