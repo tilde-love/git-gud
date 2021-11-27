@@ -4,9 +4,10 @@ main:
     contexts: [ 'triage' ]
   required_pull_request_reviews:
     required_approving_review_count: 1
-    dismissal_restrictions: 
+    restrictions: 
       users: [ 'philltew' ]
       teams: [ ]
+      apps: [ ] 
   restrictions: null
   enforce_admins: true
   allow_force_pushes: false
