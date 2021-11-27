@@ -1,8 +1,0 @@
-source:
-  - '*.js'
-action:
-  - '**/action.yml'
-automation:
-  - .github/**/*
-docs:
-  - '*.md'
