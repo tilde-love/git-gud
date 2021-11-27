@@ -8,24 +8,34 @@ change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&'
 
 categories:
-  - title: '💣 Breaking Changes'
-    labels:
-      - 'breaking'
+
   - title: '😚 Features'
     labels:
       - 'feature'
       - 'enhancement'
+
+  - title: '💣 Breaking Changes'
+    labels:
+      - 'breaking'      
+
   - title: '🐛 Bug Fixes'
     labels:
       - 'fix'
       - 'bug'
+      
+  - title: '🛡️ Security Fixes'
+    labels:
+      - 'security'
+      
   - title: '🔧 Maintenance'
     label: 
       - 'chore'
       - 'automation'
+      
   - title: '📝 Documentaion'
     label: 
       - 'docs'
+      
       
 autolabeler:
 
