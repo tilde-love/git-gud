@@ -1,0 +1,67 @@
+name: Store Simple FS Cache
+description: 'Cache for self hosted runners'
+inputs:
+  key:
+    description: ''
+    required: true
+
+  fallback:
+    description: ''
+    required: true
+
+  path:
+    description: ''
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+  - name: Store Simple Cache
+    env:
+      IN_KEY: ${{ inputs.key }}
+      IN_FALLBACK: ${{ inputs.fallback }}
+      IN_PATH: ${{ inputs.path }}
+    shell: bash
+    run: |
+      #!/bin/bash
+
+      cache1="../cache/$IN_FALLBACK"
+      cache2="../cache/$IN_KEY"
+      path="$IN_PATH"
+
+      rm -rf $cache1
+      rm -rf $cache2
+
+      if [ ! -d "../cache" ]
+      then
+        mkdir ../cache 2> /dev/null
+
+        if [ $? -eq 0 ]
+        then
+          echo "Created cache directory"
+        else
+          echo "Could not create cache directory" >&2
+        fi
+      else
+        echo "Cache directory already exists"
+      fi
+
+      cp -r $path $cache1 2> /dev/null
+
+      if [ $? -eq 0 ]
+      then
+        echo "Stored cache at path $cache1"
+      else
+        echo "Could not store cache at path $cache1" >&2
+      fi
+
+      cp -r $path $cache2 2> /dev/null
+
+      if [ $? -eq 0 ]
+      then
+        echo "Stored cache at path $cache2"
+      else
+        echo "Could not store cache at path $cache2" >&2
+      fi
+
+      if [ -d $cache2 ]; then ls --format=single-column $cache2; fi
